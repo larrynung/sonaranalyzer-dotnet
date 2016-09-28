@@ -24,7 +24,7 @@ using SonarAnalyzer.Helpers;
 using SonarAnalyzer.Common.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace SonarAnalyzer.Rules
+namespace SonarAnalyzer.Rules.CSharp
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class MetricsAnalyzer : MetricsAnalyzerBase

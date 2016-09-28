@@ -41,7 +41,7 @@ namespace SonarAnalyzer.Rules
 
         protected sealed override string FileName => CopyPasteTokenFileName;
 
-        protected sealed override CopyPasteTokenInfo GetMessage(SyntaxTree syntaxTree)
+        protected sealed override CopyPasteTokenInfo GetMessage(SyntaxTree syntaxTree, SemanticModel semanticModel)
         {
             return CalculateTokenInfo(syntaxTree, IsUsingDirective, GetCpdValue);
         }
@@ -73,8 +73,8 @@ namespace SonarAnalyzer.Rules
             return cpdTokenInfo;
         }
 
-        protected abstract string GetCpdValue(SyntaxToken token);
+        internal abstract string GetCpdValue(SyntaxToken token);
 
-        protected abstract bool IsUsingDirective(SyntaxNode node);
+        internal abstract bool IsUsingDirective(SyntaxNode node);
     }
 }

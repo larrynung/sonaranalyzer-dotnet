@@ -130,7 +130,7 @@ namespace SonarAnalyzer.Rules
                     {
                         if (!GeneratedCodeRecognizer.IsGenerated(tree))
                         {
-                            messages.Add(GetMessage(tree));
+                            messages.Add(GetMessage(tree, c.Compilation.GetSemanticModel(tree)));
                         }
                     }
 
@@ -161,7 +161,7 @@ namespace SonarAnalyzer.Rules
                 });
         }
 
-        protected abstract TMessage GetMessage(SyntaxTree syntaxTree);
+        protected abstract TMessage GetMessage(SyntaxTree syntaxTree, SemanticModel semanticModel);
 
         protected abstract GeneratedCodeRecognizer GeneratedCodeRecognizer { get; }
 

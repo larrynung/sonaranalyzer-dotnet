@@ -113,11 +113,11 @@ namespace SonarAnalyzer.Integration.UnitTest
         internal static void CheckTokenReferenceFile(string[] testFileContent, string extension,
             int totalReferenceCount, IEnumerable<ExpectedReferenceInfo> expectedReferences)
         {
-            var refInfos = GetDeserializedData<SymbolReferenceInfo>(Path.Combine(OutputFolderName, Program.SymbolReferenceFileName));
+            var refInfos = GetDeserializedData<SymbolReferenceInfo>(Path.Combine(OutputFolderName, Rules.SymbolReferenceAnalyzerBase.SymbolReferenceFileName));
 
             Assert.AreEqual(1, refInfos.Count);
             var refInfo = refInfos.First();
-            Assert.AreEqual(TestInputPath + extension, refInfo.FilePath);
+            Assert.AreEqual(TestInputFileName + extension, refInfo.FilePath);
             Assert.AreEqual(totalReferenceCount, refInfo.Reference.Count);
 
             foreach (var expectedReference in expectedReferences)

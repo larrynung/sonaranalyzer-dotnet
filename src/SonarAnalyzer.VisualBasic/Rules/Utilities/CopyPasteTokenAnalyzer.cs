@@ -24,16 +24,16 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using SonarAnalyzer.Helpers;
 using Microsoft.CodeAnalysis.VisualBasic;
 
-namespace SonarAnalyzer.Rules
+namespace SonarAnalyzer.Rules.VisualBasic
 {
     [DiagnosticAnalyzer(LanguageNames.VisualBasic)]
     public class CopyPasteTokenAnalyzer : CopyPasteTokenAnalyzerBase
     {
         protected override GeneratedCodeRecognizer GeneratedCodeRecognizer => Helpers.VisualBasic.GeneratedCodeRecognizer.Instance;
 
-        protected override bool IsUsingDirective(SyntaxNode node) => node is ImportsStatementSyntax;
+        internal override bool IsUsingDirective(SyntaxNode node) => node is ImportsStatementSyntax;
 
-        protected override string GetCpdValue(SyntaxToken token)
+        internal override string GetCpdValue(SyntaxToken token)
         {
             if (token.IsKind(SyntaxKind.DecimalLiteralToken) ||
                 token.IsKind(SyntaxKind.FloatingLiteralToken) ||

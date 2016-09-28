@@ -112,6 +112,7 @@
     <Compile Include="Rules\*.cs" />
     <Compile Include="Rules\Utilities\CopyPasteTokenAnalyzer.cs" />
     <Compile Include="Rules\Utilities\MetricsAnalyzer.cs" />
+    <Compile Include="Rules\Utilities\SymbolReferenceAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SonarAnalyzer.Common\SonarAnalyzer.Common.csproj">
