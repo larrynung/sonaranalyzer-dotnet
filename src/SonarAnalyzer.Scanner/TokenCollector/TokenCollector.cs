@@ -40,7 +40,7 @@ namespace SonarAnalyzer.Runner
             SymbolKind.Property,
             SymbolKind.TypeParameter);
 
-        private readonly SyntaxNode root;
+        private readonly SyntaxTree tree;
         private readonly SemanticModel semanticModel;
         private readonly IEnumerable<ClassifiedSpan> classifiedSpans;
 
@@ -49,9 +49,9 @@ namespace SonarAnalyzer.Runner
         public TokenCollector(string filePath, Document document, Workspace workspace)
         {
             this.filePath = filePath;
-            this.root = document.GetSyntaxRootAsync().Result;
+            this.tree = document.GetSyntaxTreeAsync().Result;
             this.semanticModel = document.GetSemanticModelAsync().Result;
-            this.classifiedSpans = Classifier.GetClassifiedSpans(semanticModel, root.FullSpan, workspace);
+            this.classifiedSpans = Classifier.GetClassifiedSpans(semanticModel, tree.GetRoot().FullSpan, workspace);
         }
 
         private class SymRefInfo
@@ -69,7 +69,7 @@ namespace SonarAnalyzer.Runner
 
                 foreach (var classifiedSpan in classifiedSpans)
                 {
-                    var token = root.FindToken(classifiedSpan.TextSpan.Start, findInsideTrivia: true);
+                    var token = tree.GetRoot().FindToken(classifiedSpan.TextSpan.Start, findInsideTrivia: true);
                     var reference = ProcessToken(token);
                     if (reference != null)
                     {
@@ -113,7 +113,7 @@ namespace SonarAnalyzer.Runner
                     var tokenInfo = new TokenTypeInfo.Types.TokenInfo
                     {
                         TokenType = tokenType,
-                        TextRange = GetTextRange(Location.Create(root.SyntaxTree, classifiedSpan.TextSpan).GetLineSpan())
+                        TextRange = GetTextRange(Location.Create(tree, classifiedSpan.TextSpan).GetLineSpan())
                     };
                     tokenTypeInfo.TokenInfo.Add(tokenInfo);
                 }
@@ -126,28 +126,7 @@ namespace SonarAnalyzer.Runner
         {
             get
             {
-                var cpdTokenInfo = new CopyPasteTokenInfo
-                {
-                    FilePath = filePath
-                };
-
-                var tokens = this.root.DescendantTokens(n => !n.IsUsingDirective(), false);
-
-                foreach (var token in tokens)
-                {
-                    var tokenInfo = new CopyPasteTokenInfo.Types.TokenInfo
-                    {
-                        TokenValue = token.GetCpdValue(),
-                        TextRange = GetTextRange(Location.Create(root.SyntaxTree, token.Span).GetLineSpan())
-                    };
-
-                    if (!string.IsNullOrWhiteSpace(tokenInfo.TokenValue))
-                    {
-                        cpdTokenInfo.TokenInfo.Add(tokenInfo);
-                    }
-                }
-
-                return cpdTokenInfo;
+                return Rules.CopyPasteTokenAnalyzerBase.CalculateTokenInfo(tree, n => n.IsUsingDirective(), t => t.GetCpdValue());
             }
         }
 
@@ -161,13 +140,13 @@ namespace SonarAnalyzer.Runner
 
             var sr = new SymbolReferenceInfo.Types.SymbolReference
             {
-                Declaration = GetTextRange(Location.Create(root.SyntaxTree, declaration.IdentifierToken.Span).GetLineSpan())
+                Declaration = GetTextRange(Location.Create(tree, declaration.IdentifierToken.Span).GetLineSpan())
             };
 
             var references = allReference.Where(r => !r.IsDeclaration).Select(r => r.IdentifierToken);
             foreach (var reference in references)
             {
-                sr.Reference.Add(GetTextRange(Location.Create(root.SyntaxTree, reference.Span).GetLineSpan()));
+                sr.Reference.Add(GetTextRange(Location.Create(tree, reference.Span).GetLineSpan()));
             }
 
             return sr;

@@ -110,6 +110,8 @@
     <Compile Include="Metrics\Metrics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rules\*.cs" />
+    <Compile Include="Rules\Utilities\CopyPasteTokenAnalyzer.cs" />
+    <Compile Include="Rules\Utilities\MetricsAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SonarAnalyzer.Common\SonarAnalyzer.Common.csproj">

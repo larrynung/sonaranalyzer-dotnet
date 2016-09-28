@@ -102,6 +102,21 @@ namespace SonarAnalyzer.Helpers
         }
 
         public static void RegisterSyntaxTreeActionInNonGenerated(
+            this CompilationStartAnalysisContext context,
+            GeneratedCodeRecognizer generatedCodeRecognizer,
+            Action<SyntaxTreeAnalysisContext> action)
+        {
+            context.RegisterSyntaxTreeAction(
+                c =>
+                {
+                    if (!c.Tree.IsGenerated(generatedCodeRecognizer, context.Compilation))
+                    {
+                        action(c);
+                    }
+                });
+        }
+
+        public static void RegisterSyntaxTreeActionInNonGenerated(
             this ParameterLoadingAnalysisContext context,
             GeneratedCodeRecognizer generatedCodeRecognizer,
             Action<SyntaxTreeAnalysisContext> action)

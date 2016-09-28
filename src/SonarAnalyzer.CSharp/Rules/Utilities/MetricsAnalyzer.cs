@@ -18,15 +18,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
 
-using System.Reflection;
-using System.Runtime.CompilerServices;
+using Microsoft.CodeAnalysis;
+using SonarAnalyzer.Common;
+using SonarAnalyzer.Helpers;
+using SonarAnalyzer.Common.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 
-[assembly: AssemblyTitle("SonarAnalyzer Common")]
-[assembly: AssemblyProduct("SonarAnalyzer")]
-[assembly: AssemblyDescription("")]
+namespace SonarAnalyzer.Rules
+{
+    [DiagnosticAnalyzer(LanguageNames.CSharp)]
+    public class MetricsAnalyzer : MetricsAnalyzerBase
+    {
+        protected override GeneratedCodeRecognizer GeneratedCodeRecognizer => Helpers.CSharp.GeneratedCodeRecognizer.Instance;
 
-[assembly: InternalsVisibleTo("SonarAnalyzer.CSharp" + Signing.InternalsVisibleToPublicKey)]
-[assembly: InternalsVisibleTo("SonarAnalyzer.VisualBasic" + Signing.InternalsVisibleToPublicKey)]
-[assembly: InternalsVisibleTo("SonarAnalyzer.UnitTest" + Signing.InternalsVisibleToPublicKey)]
-[assembly: InternalsVisibleTo("SonarAnalyzer.Scanner" + Signing.InternalsVisibleToPublicKey)]
-[assembly: InternalsVisibleTo("SonarAnalyzer.Platform.Integration.UnitTest" + Signing.InternalsVisibleToPublicKey)]
+        protected override MetricsBase GetMetrics(SyntaxTree syntaxTree) => new Metrics(syntaxTree);
+    }
+}

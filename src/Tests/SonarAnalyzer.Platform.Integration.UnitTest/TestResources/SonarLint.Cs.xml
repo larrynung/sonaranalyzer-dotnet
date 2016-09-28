@@ -5,6 +5,10 @@
       <Key>sonar.cs.ignoreHeaderComments</Key>
       <Value>true</Value>
     </Setting>
+    <Setting>
+      <Key>sonarqube.protobuf.folder.path</Key>
+      <Value>pb</Value>
+    </Setting>
   </Settings>
   <Rules>
     <Rule>

@@ -32,9 +32,7 @@ namespace SonarAnalyzer.Runner
     {
         internal const string TokenTypeFileName = "token-type.pb";
         internal const string SymbolReferenceFileName = "symbol-reference.pb";
-        internal const string CopyPasteTokenFileName = "token-cpd.pb";
         internal const string IssuesFileName = "issues.pb";
-        internal const string MetricsFileName = "metrics.pb";
 
         public static int Main(string[] args)
         {
@@ -62,8 +60,8 @@ namespace SonarAnalyzer.Runner
 
             using (var tokentypeStream = File.Create(Path.Combine(outputDirectory, TokenTypeFileName)))
             using (var symRefStream = File.Create(Path.Combine(outputDirectory, SymbolReferenceFileName)))
-            using (var cpdStream = File.Create(Path.Combine(outputDirectory, CopyPasteTokenFileName)))
-            using (var metricsStream = File.Create(Path.Combine(outputDirectory, MetricsFileName)))
+            using (var cpdStream = File.Create(Path.Combine(outputDirectory, Rules.CopyPasteTokenAnalyzerBase.CopyPasteTokenFileName)))
+            using (var metricsStream = File.Create(Path.Combine(outputDirectory, Rules.MetricsAnalyzerBase.MetricsFileName)))
             using (var issuesStream = File.Create(Path.Combine(outputDirectory, IssuesFileName)))
             {
                 foreach (var file in configuration.Files)
@@ -90,31 +88,7 @@ namespace SonarAnalyzer.Runner
                             ? (MetricsBase)new Common.CSharp.Metrics(syntaxTree)
                             : new Common.VisualBasic.Metrics(syntaxTree);
 
-                        var complexity = metrics.Complexity;
-
-                        var metricsInfo = new MetricsInfo()
-                        {
-                            FilePath = file,
-                            LineCount = metrics.LineCount,
-                            ClassCount = metrics.ClassCount,
-                            StatementCount = metrics.StatementCount,
-                            FunctionCount = metrics.FunctionCount,
-                            PublicApiCount = metrics.PublicApiCount,
-                            PublicUndocumentedApiCount = metrics.PublicUndocumentedApiCount,
-
-                            Complexity = complexity,
-                            ComplexityInClasses = metrics.ClassNodes.Sum(metrics.GetComplexity),
-                            ComplexityInFunctions = metrics.FunctionNodes.Sum(metrics.GetComplexity),
-
-                            FileComplexityDistribution = new Distribution(Distribution.FileComplexityRange).Add(complexity).ToString(),
-                            FunctionComplexityDistribution = metrics.FunctionComplexityDistribution.ToString()
-                        };
-
-                        var comments = metrics.GetComments(configuration.IgnoreHeaderComments);
-                        metricsInfo.NoSonarComment.AddRange(comments.NoSonar);
-                        metricsInfo.NonBlankComment.AddRange(comments.NonBlank);
-
-                        metricsInfo.CodeLine.AddRange(metrics.CodeLines);
+                        var metricsInfo = Rules.MetricsAnalyzerBase.CalculateMetrics(metrics, file, configuration.IgnoreHeaderComments);
 
                         metricsInfo.WriteDelimitedTo(metricsStream);
 

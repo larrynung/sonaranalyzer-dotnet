@@ -103,7 +103,7 @@ namespace SonarAnalyzer.Integration.UnitTest
 
         internal static void CheckCpdTokens(string tokenCpdExpected)
         {
-            var cpdInfos = GetDeserializedData<CopyPasteTokenInfo>(Path.Combine(OutputFolderName, Program.CopyPasteTokenFileName));
+            var cpdInfos = GetDeserializedData<CopyPasteTokenInfo>(Path.Combine(OutputFolderName, Rules.CopyPasteTokenAnalyzerBase.CopyPasteTokenFileName));
 
             Assert.AreEqual(1, cpdInfos.Count);
             var actual = string.Join(" ", cpdInfos[0].TokenInfo.Select(ti => ti.TokenValue));
@@ -165,7 +165,7 @@ namespace SonarAnalyzer.Integration.UnitTest
         [TestMethod]
         public void Metrics_Are_Present()
         {
-            var metrics = GetDeserializedData<MetricsInfo>(Path.Combine(OutputFolderName, Program.MetricsFileName));
+            var metrics = GetDeserializedData<MetricsInfo>(Path.Combine(OutputFolderName, Rules.MetricsAnalyzerBase.MetricsFileName));
 
             Assert.AreEqual(1, metrics.Count);
             var m = metrics.First();
