@@ -6,7 +6,7 @@
       <Value>true</Value>
     </Setting>
     <Setting>
-      <Key>sonarqube.protobuf.folder.path</Key>
+      <Key>sonarqube.out.protobuf</Key>
       <Value>pb</Value>
     </Setting>
   </Settings>

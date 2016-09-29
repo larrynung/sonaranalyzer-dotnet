@@ -55,12 +55,12 @@ namespace SonarAnalyzer.Integration.UnitTest
         public void Token_Types_Computed_VisualBasic()
         {
             var testFileContent = File.ReadAllLines(EndToEnd_CSharp.TestInputPath + extension);
-            EndToEnd_CSharp.CheckTokenInfoFile(testFileContent, extension, 67, new[]
+            EndToEnd_CSharp.CheckTokenInfoFile(testFileContent, extension, 32, new[]
                 {
-                    new EndToEnd_CSharp.ExpectedTokenInfo { Index = 8, Kind = TokenType.Comment, Text = "'''" },
-                    new EndToEnd_CSharp.ExpectedTokenInfo { Index = 31, Kind = TokenType.TypeName, Text = "TTTestClass" },
-                    new EndToEnd_CSharp.ExpectedTokenInfo { Index = 49, Kind = TokenType.TypeName, Text = "TTTestClass" },
-                    new EndToEnd_CSharp.ExpectedTokenInfo { Index = 48, Kind = TokenType.Keyword, Text = "New" }
+                    new EndToEnd_CSharp.ExpectedTokenInfo { Index = 7, Kind = TokenType.Comment, Text = "' FIXME: fix this issue" },
+                    new EndToEnd_CSharp.ExpectedTokenInfo { Index = 6, Kind = TokenType.TypeName, Text = "TTTestClass" },
+                    new EndToEnd_CSharp.ExpectedTokenInfo { Index = 17, Kind = TokenType.TypeName, Text = "TTTestClass" },
+                    new EndToEnd_CSharp.ExpectedTokenInfo { Index = 16, Kind = TokenType.Keyword, Text = "New" }
                 });
         }
 

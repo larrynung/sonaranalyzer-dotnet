@@ -73,12 +73,12 @@ namespace SonarAnalyzer.Integration.UnitTest
         public void Token_Types_Computed_CSharp()
         {
             var testFileContent = File.ReadAllLines(TestInputPath + extension);
-            CheckTokenInfoFile(testFileContent, extension, 78, new[]
+            CheckTokenInfoFile(testFileContent, extension, 23, new[]
                 {
-                    new ExpectedTokenInfo { Index = 8, Kind = TokenType.Comment, Text = "///" },
-                    new ExpectedTokenInfo { Index = 31, Kind = TokenType.TypeName, Text = "TTTestClass" },
-                    new ExpectedTokenInfo { Index = 62, Kind = TokenType.TypeName, Text = "TTTestClass" },
-                    new ExpectedTokenInfo { Index = 49, Kind = TokenType.Keyword, Text = "var" }
+                    new ExpectedTokenInfo { Index = 6, Kind = TokenType.Comment, Text = "// FIXME: fix this issue" },
+                    new ExpectedTokenInfo { Index = 5, Kind = TokenType.TypeName, Text = "TTTestClass" },
+                    new ExpectedTokenInfo { Index = 18, Kind = TokenType.TypeName, Text = "TTTestClass" },
+                    new ExpectedTokenInfo { Index = 12, Kind = TokenType.Keyword, Text = "var" }
                 });
         }
 
@@ -142,11 +142,11 @@ namespace SonarAnalyzer.Integration.UnitTest
 
         internal static void CheckTokenInfoFile(string[] testInputFileLines, string extension, int totalTokenCount, IEnumerable<ExpectedTokenInfo> expectedTokens)
         {
-            var tokenInfos = GetDeserializedData<TokenTypeInfo>(Path.Combine(OutputFolderName, Program.TokenTypeFileName));
+            var tokenInfos = GetDeserializedData<TokenTypeInfo>(Path.Combine(OutputFolderName, Rules.TokenTypeAnalyzerBase.TokenTypeFileName));
 
             Assert.AreEqual(1, tokenInfos.Count);
             var token = tokenInfos.First();
-            Assert.AreEqual(TestInputPath + extension, token.FilePath);
+            Assert.AreEqual(TestInputFileName + extension, token.FilePath);
             Assert.AreEqual(totalTokenCount, token.TokenInfo.Count);
 
             foreach (var expectedToken in expectedTokens)

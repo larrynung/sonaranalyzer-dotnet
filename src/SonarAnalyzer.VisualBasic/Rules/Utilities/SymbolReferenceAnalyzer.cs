@@ -36,6 +36,11 @@ namespace SonarAnalyzer.Rules.VisualBasic
         // Based on Roslyn: http://source.roslyn.codeplex.com/#Microsoft.CodeAnalysis.CSharp.Workspaces/LanguageServices/CSharpSyntaxFactsService.cs,1453
         internal override SyntaxNode GetBindableParent(SyntaxToken token)
         {
+            return GetBindableParentNode(token);
+        }
+
+        internal static SyntaxNode GetBindableParentNode(SyntaxToken token)
+        {
             var node = token.Parent;
             while (node != null)
             {

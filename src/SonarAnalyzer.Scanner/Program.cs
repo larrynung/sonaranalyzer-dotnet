@@ -30,7 +30,6 @@ namespace SonarAnalyzer.Runner
 {
     public static class Program
     {
-        internal const string TokenTypeFileName = "token-type.pb";
         internal const string IssuesFileName = "issues.pb";
 
         public static int Main(string[] args)
@@ -57,7 +56,7 @@ namespace SonarAnalyzer.Runner
 
             var currentFileIndex = 0;
 
-            using (var tokentypeStream = File.Create(Path.Combine(outputDirectory, TokenTypeFileName)))
+            using (var tokentypeStream = File.Create(Path.Combine(outputDirectory, Rules.TokenTypeAnalyzerBase.TokenTypeFileName)))
             using (var symRefStream = File.Create(Path.Combine(outputDirectory, Rules.SymbolReferenceAnalyzerBase.SymbolReferenceFileName)))
             using (var cpdStream = File.Create(Path.Combine(outputDirectory, Rules.CopyPasteTokenAnalyzerBase.CopyPasteTokenFileName)))
             using (var metricsStream = File.Create(Path.Combine(outputDirectory, Rules.MetricsAnalyzerBase.MetricsFileName)))
@@ -106,7 +105,7 @@ namespace SonarAnalyzer.Runner
 
                             if (diagnostic.Location != Location.None)
                             {
-                                issue.Location = TokenCollector.GetTextRange(diagnostic.Location.GetLineSpan());
+                                issue.Location = Rules.UtilityAnalyzerBase.GetTextRange(diagnostic.Location.GetLineSpan());
                             }
 
                             issuesInFile.Issue.Add(issue);

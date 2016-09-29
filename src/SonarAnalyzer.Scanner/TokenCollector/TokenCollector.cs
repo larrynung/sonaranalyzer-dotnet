@@ -67,26 +67,9 @@ namespace SonarAnalyzer.Runner
         {
             get
             {
-                var tokenTypeInfo = new TokenTypeInfo
-                {
-                    FilePath = filePath
-                };
-
-                foreach (var classifiedSpan in classifiedSpans)
-                {
-                    var tokenType = ClassificationTypeMapping.ContainsKey(classifiedSpan.ClassificationType)
-                        ? ClassificationTypeMapping[classifiedSpan.ClassificationType]
-                        : TokenType.Unknown;
-
-                    var tokenInfo = new TokenTypeInfo.Types.TokenInfo
-                    {
-                        TokenType = tokenType,
-                        TextRange = GetTextRange(Location.Create(tree, classifiedSpan.TextSpan).GetLineSpan())
-                    };
-                    tokenTypeInfo.TokenInfo.Add(tokenInfo);
-                }
-
-                return tokenTypeInfo;
+                return tree.GetRoot().Language == LanguageNames.CSharp
+                    ? new Rules.CSharp.TokenTypeAnalyzer().GetTokenTypeInfo(tree, semanticModel)
+                    : new Rules.VisualBasic.TokenTypeAnalyzer().GetTokenTypeInfo(tree, semanticModel);
             }
         }
 
@@ -98,53 +81,11 @@ namespace SonarAnalyzer.Runner
             }
         }
 
-        internal static TextRange GetTextRange(FileLinePositionSpan lineSpan)
-        {
-            return new TextRange
-            {
-                StartLine = lineSpan.StartLinePosition.GetLineNumberToReport(),
-                EndLine = lineSpan.EndLinePosition.GetLineNumberToReport(),
-                StartOffset = lineSpan.StartLinePosition.Character,
-                EndOffset = lineSpan.EndLinePosition.Character
-            };
-        }
 
         private static bool IsIdentifier(SyntaxToken token)
         {
             return token.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken) ||
                 token.IsKind(Microsoft.CodeAnalysis.VisualBasic.SyntaxKind.IdentifierToken);
         }
-
-        private static readonly IDictionary<string, TokenType> ClassificationTypeMapping = new Dictionary<string, TokenType>
-        {
-            { ClassificationTypeNames.ClassName, TokenType.TypeName },
-            { ClassificationTypeNames.DelegateName, TokenType.TypeName },
-            { ClassificationTypeNames.EnumName, TokenType.TypeName },
-            { ClassificationTypeNames.InterfaceName, TokenType.TypeName },
-            { ClassificationTypeNames.ModuleName, TokenType.TypeName },
-            { ClassificationTypeNames.StructName, TokenType.TypeName },
-
-            { ClassificationTypeNames.TypeParameterName, TokenType.TypeName },
-
-            { ClassificationTypeNames.Comment, TokenType.Comment },
-            { ClassificationTypeNames.XmlDocCommentAttributeName, TokenType.Comment },
-            { ClassificationTypeNames.XmlDocCommentAttributeQuotes, TokenType.Comment },
-            { ClassificationTypeNames.XmlDocCommentAttributeValue, TokenType.Comment },
-            { ClassificationTypeNames.XmlDocCommentCDataSection, TokenType.Comment },
-            { ClassificationTypeNames.XmlDocCommentComment, TokenType.Comment },
-            { ClassificationTypeNames.XmlDocCommentDelimiter, TokenType.Comment },
-            { ClassificationTypeNames.XmlDocCommentEntityReference, TokenType.Comment },
-            { ClassificationTypeNames.XmlDocCommentName, TokenType.Comment },
-            { ClassificationTypeNames.XmlDocCommentProcessingInstruction, TokenType.Comment },
-            { ClassificationTypeNames.XmlDocCommentText, TokenType.Comment },
-
-            { ClassificationTypeNames.NumericLiteral, TokenType.NumericLiteral },
-
-            { ClassificationTypeNames.StringLiteral, TokenType.StringLiteral },
-            { ClassificationTypeNames.VerbatimStringLiteral, TokenType.StringLiteral },
-
-            { ClassificationTypeNames.Keyword, TokenType.Keyword },
-            { ClassificationTypeNames.PreprocessorKeyword, TokenType.Keyword }
-        }.ToImmutableDictionary();
     }
 }

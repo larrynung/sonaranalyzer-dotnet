@@ -27,6 +27,7 @@ using System.IO;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Xml.Linq;
 using SonarAnalyzer.Protobuf;
+using Microsoft.CodeAnalysis.Text;
 
 namespace SonarAnalyzer.Rules
 {
@@ -66,7 +67,8 @@ namespace SonarAnalyzer.Rules
                 var xml = XDocument.Load(additionalFile.Path);
                 var settings = xml.Descendants("Setting");
                 ReadBoolProperty(settings, "sonar.cs.ignoreHeaderComments");
-                WorkDirectoryBasePath = GetPropertyStringValue(settings, "sonarqube.protobuf.folder.path");
+                // todo read sonar.vbnet.ignoreHeaderComments
+                WorkDirectoryBasePath = GetPropertyStringValue(settings, "sonarqube.out.protobuf");
 
                 if (!string.IsNullOrEmpty(WorkDirectoryBasePath))
                 {
