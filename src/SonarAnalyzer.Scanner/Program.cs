@@ -76,7 +76,7 @@ namespace SonarAnalyzer.Runner
                         var compilation = solution.Projects.First().GetCompilationAsync().Result;
                         var syntaxTree = compilation.SyntaxTrees.First();
 
-                        var tokenCollector = new TokenCollector(file, solution.GetDocument(syntaxTree), solution.Workspace);
+                        var tokenCollector = new TokenCollector(file, solution.GetDocument(syntaxTree));
 
                         tokenCollector.TokenTypeInfo.WriteDelimitedTo(tokentypeStream);
                         tokenCollector.SymbolReferenceInfo.WriteDelimitedTo(symRefStream);

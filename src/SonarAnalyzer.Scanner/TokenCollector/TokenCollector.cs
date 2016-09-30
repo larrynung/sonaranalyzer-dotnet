@@ -30,28 +30,17 @@ namespace SonarAnalyzer.Runner
 {
     public class TokenCollector
     {
-        private static readonly ISet<SymbolKind> DeclarationKinds = ImmutableHashSet.Create(
-            SymbolKind.Event,
-            SymbolKind.Field,
-            SymbolKind.Local,
-            SymbolKind.Method,
-            SymbolKind.NamedType,
-            SymbolKind.Parameter,
-            SymbolKind.Property,
-            SymbolKind.TypeParameter);
 
         private readonly SyntaxTree tree;
         private readonly SemanticModel semanticModel;
-        private readonly IEnumerable<ClassifiedSpan> classifiedSpans;
 
         private readonly string filePath;
 
-        public TokenCollector(string filePath, Document document, Workspace workspace)
+        public TokenCollector(string filePath, Document document)
         {
             this.filePath = filePath;
             this.tree = document.GetSyntaxTreeAsync().Result;
             this.semanticModel = document.GetSemanticModelAsync().Result;
-            this.classifiedSpans = Classifier.GetClassifiedSpans(semanticModel, tree.GetRoot().FullSpan, workspace);
         }
 
 
@@ -59,7 +48,9 @@ namespace SonarAnalyzer.Runner
         {
             get
             {
-                return Rules.SymbolReferenceAnalyzerBase.CalculateSymbolReferenceInfo(tree, semanticModel, t => IsIdentifier(t), t => t.GetBindableParent());
+                var message = Rules.SymbolReferenceAnalyzerBase.CalculateSymbolReferenceInfo(tree, semanticModel, t => IsIdentifier(t), t => t.GetBindableParent());
+                message.FilePath = filePath;
+                return message;
             }
         }
 
@@ -67,9 +58,11 @@ namespace SonarAnalyzer.Runner
         {
             get
             {
-                return tree.GetRoot().Language == LanguageNames.CSharp
+                var message = tree.GetRoot().Language == LanguageNames.CSharp
                     ? new Rules.CSharp.TokenTypeAnalyzer().GetTokenTypeInfo(tree, semanticModel)
                     : new Rules.VisualBasic.TokenTypeAnalyzer().GetTokenTypeInfo(tree, semanticModel);
+                message.FilePath = filePath;
+                return message;
             }
         }
 
@@ -77,7 +70,9 @@ namespace SonarAnalyzer.Runner
         {
             get
             {
-                return Rules.CopyPasteTokenAnalyzerBase.CalculateTokenInfo(tree, n => n.IsUsingDirective(), t => t.GetCpdValue());
+                var message = Rules.CopyPasteTokenAnalyzerBase.CalculateTokenInfo(tree, n => n.IsUsingDirective(), t => t.GetCpdValue());
+                message.FilePath = filePath;
+                return message;
             }
         }
 

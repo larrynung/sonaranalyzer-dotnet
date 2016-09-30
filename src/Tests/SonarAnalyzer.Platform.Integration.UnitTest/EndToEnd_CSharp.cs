@@ -117,7 +117,7 @@ namespace SonarAnalyzer.Integration.UnitTest
 
             Assert.AreEqual(1, refInfos.Count);
             var refInfo = refInfos.First();
-            Assert.AreEqual(TestInputFileName + extension, refInfo.FilePath);
+            Assert.AreEqual(TestInputPath + extension, refInfo.FilePath);
             Assert.AreEqual(totalReferenceCount, refInfo.Reference.Count);
 
             foreach (var expectedReference in expectedReferences)
@@ -146,7 +146,7 @@ namespace SonarAnalyzer.Integration.UnitTest
 
             Assert.AreEqual(1, tokenInfos.Count);
             var token = tokenInfos.First();
-            Assert.AreEqual(TestInputFileName + extension, token.FilePath);
+            Assert.AreEqual(TestInputPath + extension, token.FilePath);
             Assert.AreEqual(totalTokenCount, token.TokenInfo.Count);
 
             foreach (var expectedToken in expectedTokens)
