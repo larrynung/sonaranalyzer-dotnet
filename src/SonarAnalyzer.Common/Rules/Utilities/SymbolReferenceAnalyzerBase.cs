@@ -52,7 +52,7 @@ namespace SonarAnalyzer.Rules
         {
             var allReferences = new List<SymRefInfo>();
 
-            var tokens = syntaxTree.GetRoot().DescendantTokens(descendIntoTrivia: true);
+            var tokens = syntaxTree.GetRoot().DescendantTokens();
             foreach (var token in tokens)
             {
                 var reference = GetSymRefInfo(token, semanticModel, isIdentifier, getBindableParent);

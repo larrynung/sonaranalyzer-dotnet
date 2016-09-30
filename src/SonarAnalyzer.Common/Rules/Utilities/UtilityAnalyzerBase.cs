@@ -27,12 +27,15 @@ using System.IO;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Xml.Linq;
 using SonarAnalyzer.Protobuf;
-using Microsoft.CodeAnalysis.Text;
 
 namespace SonarAnalyzer.Rules
 {
     public abstract class UtilityAnalyzerBase : SonarDiagnosticAnalyzer
     {
+        private const string ProtobufWorkDirectory = "sonarqube.out.protobuf";
+        internal const string IgnoreHeaderCommentsCSharp = "sonar.cs.ignoreHeaderComments";
+        internal const string IgnoreHeaderCommentsVisualBasic = "sonar.vbnet.ignoreHeaderComments";
+
         protected static readonly object parameterReadLock = new object();
         private static volatile bool parametersAlreadyRead = false;
 
@@ -40,7 +43,11 @@ namespace SonarAnalyzer.Rules
 
         protected static string WorkDirectoryBasePath { get; set; }
 
-        protected static bool IgnoreHeaderComments { get; set; }
+        protected static Dictionary<string, bool> IgnoreHeaderComments { get; } = new Dictionary<string, bool>
+            {
+                { IgnoreHeaderCommentsCSharp, false },
+                { IgnoreHeaderCommentsVisualBasic, false },
+            };
 
         protected static void ReadParameters(AnalyzerOptions options)
         {
@@ -66,9 +73,8 @@ namespace SonarAnalyzer.Rules
 
                 var xml = XDocument.Load(additionalFile.Path);
                 var settings = xml.Descendants("Setting");
-                ReadBoolProperty(settings, "sonar.cs.ignoreHeaderComments");
-                // todo read sonar.vbnet.ignoreHeaderComments
-                WorkDirectoryBasePath = GetPropertyStringValue(settings, "sonarqube.out.protobuf");
+                ReadHeaderCommentProperties(settings);
+                WorkDirectoryBasePath = GetPropertyStringValue(settings, ProtobufWorkDirectory);
 
                 if (!string.IsNullOrEmpty(WorkDirectoryBasePath))
                 {
@@ -79,14 +85,20 @@ namespace SonarAnalyzer.Rules
             }
         }
 
-        private static void ReadBoolProperty(IEnumerable<XElement> settings, string propName)
+        private static void ReadHeaderCommentProperties(IEnumerable<XElement> settings)
         {
-            string propertyStringValue = GetPropertyStringValue(settings, propName);
+            ReadHeaderCommentProperties(settings, IgnoreHeaderCommentsCSharp);
+            ReadHeaderCommentProperties(settings, IgnoreHeaderCommentsVisualBasic);
+        }
+
+        private static void ReadHeaderCommentProperties(IEnumerable<XElement> settings, string propertyName)
+        {
+            string propertyStringValue = GetPropertyStringValue(settings, propertyName);
             bool propertyValue;
             if (propertyStringValue != null &&
                 bool.TryParse(propertyStringValue, out propertyValue))
             {
-                IgnoreHeaderComments = propertyValue;
+                IgnoreHeaderComments[propertyName] = propertyValue;
             }
         }
 
@@ -110,9 +122,9 @@ namespace SonarAnalyzer.Rules
     }
 
     public abstract class UtilityAnalyzerBase<TMessage> : UtilityAnalyzerBase
-        where TMessage : IMessage
+        where TMessage : IMessage, new()
     {
-        private static readonly object fileWriteLock = new object();
+        private static readonly object fileWriteLock = new TMessage();
 
         protected sealed override void Initialize(SonarAnalysisContext context)
         {

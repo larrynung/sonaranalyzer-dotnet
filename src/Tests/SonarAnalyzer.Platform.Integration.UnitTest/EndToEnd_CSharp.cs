@@ -95,7 +95,7 @@ namespace SonarAnalyzer.Integration.UnitTest
             var testFileContent = File.ReadAllLines(TestInputPath + extension);
             CheckTokenReferenceFile(testFileContent, extension, 3, new[]
                 {
-                    new ExpectedReferenceInfo { Index = 0, NumberOfReferences = 2 },
+                    new ExpectedReferenceInfo { Index = 0, NumberOfReferences = 1 },
                     new ExpectedReferenceInfo { Index = 1, NumberOfReferences = 0 },
                     new ExpectedReferenceInfo { Index = 2, NumberOfReferences = 1 }
                 });

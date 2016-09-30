@@ -46,7 +46,10 @@ namespace SonarAnalyzer.Rules
         protected sealed override MetricsInfo GetMessage(SyntaxTree syntaxTree, SemanticModel semanticModel)
         {
             var metrics = GetMetrics(syntaxTree);
-            return CalculateMetrics(metrics, syntaxTree.FilePath, IgnoreHeaderComments);
+            return CalculateMetrics(metrics, syntaxTree.FilePath,
+                syntaxTree.GetRoot().Language == LanguageNames.CSharp
+                ? IgnoreHeaderComments[IgnoreHeaderCommentsCSharp]
+                : IgnoreHeaderComments[IgnoreHeaderCommentsVisualBasic]);
         }
 
         internal static MetricsInfo CalculateMetrics(MetricsBase metrics, string filePath, bool ignoreHeaderComments)

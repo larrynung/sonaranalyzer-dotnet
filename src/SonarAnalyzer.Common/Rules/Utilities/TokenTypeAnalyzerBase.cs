@@ -20,9 +20,7 @@
 
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using SonarAnalyzer.Common;
 using SonarAnalyzer.Protobuf;
-using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.Text;
 using System.Linq;
@@ -148,7 +146,10 @@ namespace SonarAnalyzer.Rules
                     }
                 }
 
-                // todo contextual keywords
+                if (IsContextualKeyword(token))
+                {
+                    CollectClassified(TokenType.Keyword, token.Span);
+                }
             }
 
             protected abstract SyntaxNode GetBindableParent(SyntaxToken token);
@@ -233,6 +234,8 @@ namespace SonarAnalyzer.Rules
             protected abstract bool IsRegularComment(SyntaxTrivia trivia);
 
             protected abstract bool IsKeyword(SyntaxToken token);
+
+            protected abstract bool IsContextualKeyword(SyntaxToken token);
 
             protected abstract bool IsIdentifier(SyntaxToken token);
 

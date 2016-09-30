@@ -57,6 +57,11 @@ namespace SonarAnalyzer.Rules.CSharp
                 return SyntaxFacts.IsKeywordKind(token.Kind());
             }
 
+            protected override bool IsContextualKeyword(SyntaxToken token)
+            {
+                return SyntaxFacts.IsContextualKeyword(token.Kind());
+            }
+
             protected override bool IsRegularComment(SyntaxTrivia trivia)
             {
                 return CommentKinds.Contains(trivia.Kind());
